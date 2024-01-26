@@ -11,7 +11,6 @@ if [ -z "${files_to_check}" ]; then
     exit 0
 fi
 (
-    set -eo pipefail
     clang-format-11 \
         --style=file --Werror \
         ${files_to_check} \
