@@ -1,0 +1,3 @@
+*.pyc
+.docker-bbq
+__pycache__

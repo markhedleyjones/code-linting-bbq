@@ -1,0 +1,6 @@
+*.pyc
+.docker-bbq
+.git
+.gitignore
+__pycache__
+Makefile

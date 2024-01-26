@@ -1,2 +1,8 @@
 # code-linting-bbq
-Docker-bbq-based docker images for running code linters locally
+
+## Building
+A self-contained, production-ready image can be built by running:
+
+    make production
+
+For development, this repository uses a [docker-bbq](https://github.com/markhedleyjones/docker-bbq) workflow with an image built by running `make`.
