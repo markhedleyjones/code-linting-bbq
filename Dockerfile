@@ -41,6 +41,8 @@ WORKDIR $WORKDIR
 # Copy any installation resources from the host
 COPY build/resources/* ${WORKDIR}
 
+COPY install/* /usr/local/bin/
+
 ################################################################################
 # DEVELOPMENT TARGET - generate development-friendly image
 ################################################################################

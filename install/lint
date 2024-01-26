@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+exit_code=0
+linters=(clang-format flake8 roslint typecheck)
+for check in ${linters[@]}; do
+    echo "Running ${check}"
+    if ! ${check}; then
+        exit_code=1
+        echo "failed ${check}"
+    fi
+done
+
+exit ${exit_code}

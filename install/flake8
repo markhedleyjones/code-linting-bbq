@@ -24,4 +24,4 @@ else
     echo "passed=false"
 fi
 
-exit $exit_code
+exit ${exit_code}

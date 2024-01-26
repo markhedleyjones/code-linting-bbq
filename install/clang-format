@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+files_to_check=$(find ~/workspace/mounts -name "*.cpp" -o -name "*.h" -o -name "*.hpp")
+
+if [ -z "${files_to_check}" ]; then
+    echo "found 0 source file(s)"
+    echo "passed=true"
+    exit 0
+fi
+(
+    set -eo pipefail
+    clang-format-11 \
+        --style=file --dry-run --Werror \
+        ${files_to_check} \
+        2>&1 >/dev/null |
+        sed ':l; N; /\n\S\+:[0-9]\+:[0-9]\+: error: /b l; N; s/\n/%0A/g' |
+        sed 's/^\([^:]\+\):\([0-9]\+\):\([0-9]\+\): error: \+\(.*\)/::error file=\1,line=\2,col=\3::\4/'
+) && echo "passed=true" ||
+    (
+        echo "passed=false"
+        exit 1
+    )
