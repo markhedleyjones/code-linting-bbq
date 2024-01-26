@@ -2,7 +2,8 @@
 
 set -eo pipefail
 
-files_to_check=$(find ~/workspace/mounts -name "*.cpp" -o -name "*.h" -o -name "*.hpp")
+cd /mnt
+files_to_check=$(find . -type f -not -path '*/build/*' -name "*.cpp" -o -name "*.h" -o -name "*.hpp")
 
 if [ -z "${files_to_check}" ]; then
     echo "found 0 source file(s)"

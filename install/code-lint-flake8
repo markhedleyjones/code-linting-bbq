@@ -4,7 +4,8 @@ set -eo pipefail
 
 cmd="flake8 --count --show-source --statistics"
 
-files_to_check=$(find ~/workspace/mounts -type f -not -path '*/\.git/*' -not -path '*/__pycache__/*' -not -path '*/\.mypy_cache/*')
+cd /mnt
+files_to_check=$(find . -type f -not -path '*/\.git/*' -not -path '*/__pycache__/*' -not -path '*/\.mypy_cache/*')
 
 exit_code=0
 

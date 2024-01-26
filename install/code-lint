@@ -3,7 +3,7 @@
 set -eo pipefail
 
 exit_code=0
-linters=(clang-format flake8 roslint typecheck)
+linters=(code-lint-clang code-lint-flake8 code-lint-roslint code-lint-typecheck)
 for check in ${linters[@]}; do
     echo "Running ${check}"
     if ! ${check}; then
