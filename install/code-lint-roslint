@@ -5,8 +5,6 @@ set -eo pipefail
 cd /mnt
 files_to_check=$(find . -type f -not -path '*/build/*' -name "*.cpp" -o -name "*.h" -o -name "*.hpp")
 
-echo "Checking ${files_to_check}"
-
 if [ -z "${files_to_check}" ]; then
     echo "found 0 source file(s)"
     echo "passed=true"

@@ -22,8 +22,6 @@ if [ ${#python_files[@]} -eq 0 ]; then
     exit 0
 fi
 
-echo "checking ${python_files[@]}"
-
 # install explicitly listed type stub packages
 if [ -f ".mypy-stub-pkgs" ]; then
     pip install -r .mypy-stub-pkgs
