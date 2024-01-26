@@ -19,6 +19,9 @@ development: pre-build build-development-image post-build
 .PHONY: production
 production: pre-build build-production-image post-build
 
+.PHONY: install
+install: production link
+
 # A development build does not include the workspace
 .PHONY: build-development-image
 build-development-image:
@@ -62,7 +65,6 @@ build-production-image:
 # Preparatory stage before building the target image
 .PHONY: pre-build
 pre-build:
-
 	# Cleaning the packagelist ...
 	@mkdir -p build/tmp
 	@cat build/packagelist | sort --unique | sed '/^\s*$$/d' > build/tmp/packagelist
@@ -81,3 +83,8 @@ pre-build:
 .PHONY: post-build
 post-build:
 	@rm -rf build/tmp
+
+.PHONY: link
+link:
+	@echo "Linking scripts ..."
+	@./install.sh
