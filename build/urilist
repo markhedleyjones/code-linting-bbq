@@ -1,0 +1,4 @@
+https://raw.githubusercontent.com/seqsense/ros_style/master/.flake8
+https://raw.githubusercontent.com/seqsense/ros_style/master/pyproject.toml
+https://raw.githubusercontent.com/seqsense/ros_style/master/mypy.ini
+https://raw.githubusercontent.com/seqsense/ros_style/master/.clang-format
