@@ -1,3 +1,4 @@
 *.pyc
 .docker-bbq
 __pycache__
+build/resources
