@@ -22,6 +22,8 @@ COPY build/tmp/pip /build/pip
 RUN if [ ! -z $(ls /build/pip) ] ; then for path in /build/pip/pip*-req*.txt ; \
   do $(basename ${path} | cut -d '-' -f 1) install --no-cache-dir -r ${path} ; done ; fi
 
+COPY install/* /usr/local/bin/
+
 # Create user account (if necessary)
 ARG USER_GID
 ARG USER_UID
@@ -38,10 +40,6 @@ ARG WORKSPACE_NAME
 ENV WORKSPACE $WORKDIR/$WORKSPACE_NAME
 WORKDIR $WORKDIR
 
-# Copy any installation resources from the host
-COPY build/resources/* ${WORKDIR}
-
-COPY install/* /usr/local/bin/
 
 ################################################################################
 # DEVELOPMENT TARGET - generate development-friendly image

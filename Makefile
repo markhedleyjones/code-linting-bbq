@@ -20,7 +20,7 @@ development: pre-build build-development-image post-build
 production: pre-build build-production-image post-build
 
 .PHONY: install
-install: production link
+install: development link
 
 # A development build does not include the workspace
 .PHONY: build-development-image

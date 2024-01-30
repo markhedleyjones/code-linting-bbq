@@ -2,9 +2,10 @@
 
 set -eo pipefail
 
+curl -LOJs https://raw.githubusercontent.com/seqsense/ros_style/master/mypy.ini
+
 cmd="mypy --config-file mypy.ini --scripts-are-modules"
 
-cd /mnt
 files_to_check=$(find . -type f -not -path '*/\.git/*' -not -path '*/__pycache__/*' -not -path '*/\.mypy_cache/*')
 
 python_files=()
