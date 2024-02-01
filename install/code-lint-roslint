@@ -1,22 +1,33 @@
 #!/usr/bin/env bash
 
+echo "Running $(basename ${0}) ..."
+
 set -eo pipefail
 
-files_to_check=$(find . -type f -not -path '*/build/*' -name "*.cpp" -o -name "*.h" -o -name "*.hpp")
+paths_to_ignore=$(find . -type f -not -path '*/build/*' -name ".lint-ignore" | xargs dirname)
+
+find_command="find . -type f -not -path '*/build/*'"
+for path in ${paths_to_ignore}; do
+    find_command="${find_command} -not -path '${path}/*'"
+done
+find_command="${find_command} -name '*.cpp' -o -name '*.h' -o -name '*.hpp'"
+
+files_to_check=($(eval "${find_command}"))
 
 if [ -z "${files_to_check}" ]; then
-    echo "found 0 source file(s)"
-    echo "passed=true"
+    echo " - Found 0 source file(s)"
+    echo -e " - [\e[32mPASSED\e[0m]"
     exit 0
 fi
 (
+    echo " - Found ${#files_to_check[@]} source file(s)"
     roslint-cpplint \
         --filter=-runtime/references,-build/c++11 --headers=h,hpp \
         ${files_to_check} \
         2>&1 >/dev/null |
         sed 's/^\([^:]\+\):\([0-9]\+\):\s\+\(.*\)/::error file=\1,line=\2::\3/'
-) && echo "passed=true" ||
+) && echo -e " - [\e[32mPASSED\e[0m]" ||
     (
-        echo "passed=false"
+        echo -e " - [\e[31mFAILED\e[0m]"
         exit 1
     )

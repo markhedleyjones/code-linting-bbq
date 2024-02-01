@@ -1,25 +1,37 @@
 #!/usr/bin/env bash
 
+echo "Running $(basename ${0}) ..."
+
 set -eo pipefail
 
 curl -LOJs https://raw.githubusercontent.com/seqsense/ros_style/master/.clang-format
+trap 'rm -f .clang-format' EXIT
 
-files_to_check=$(find . -type f -not -path '*/build/*' -name "*.cpp" -o -name "*.h" -o -name "*.hpp")
+paths_to_ignore=$(find . -type f -not -path '*/build/*' -name ".lint-ignore" | xargs dirname)
+
+find_command="find . -type f -not -path '*/build/*'"
+for path in ${paths_to_ignore}; do
+    find_command="${find_command} -not -path '${path}/*'"
+done
+find_command="${find_command} -name '*.cpp' -o -name '*.h' -o -name '*.hpp'"
+
+files_to_check=($(eval "${find_command}"))
 
 if [ -z "${files_to_check}" ]; then
-    echo "found 0 source file(s)"
-    echo "passed=true"
+    echo " - Found 0 source file(s)"
+    echo -e " - [\e[32mPASSED\e[0m]"
     exit 0
 fi
 (
+    echo " - Found ${#files_to_check[@]} source file(s)"
     clang-format-11 \
         --style=file --Werror \
         ${files_to_check} \
         2>&1 >/dev/null |
         sed ':l; N; /\n\S\+:[0-9]\+:[0-9]\+: error: /b l; N; s/\n/%0A/g' |
         sed 's/^\([^:]\+\):\([0-9]\+\):\([0-9]\+\): error: \+\(.*\)/::error file=\1,line=\2,col=\3::\4/'
-) && echo "passed=true" ||
+) && echo -e " - [\e[32mPASSED\e[0m]" ||
     (
-        echo "passed=false"
+        echo -e " - [\e[31mFAILED\e[0m]"
         exit 1
     )

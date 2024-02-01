@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 
+echo "Running $(basename ${0}) ..."
+
 set -eo pipefail
 
 curl -LOJs https://raw.githubusercontent.com/seqsense/ros_style/master/mypy.ini
+trap 'rm -f mypy.ini' EXIT
 
 cmd="mypy --config-file mypy.ini --scripts-are-modules"
 
@@ -16,10 +19,10 @@ for file in ${files_to_check}; do
         python_files+=(${file})
     fi
 done
-echo "found ${#python_files[@]} python file(s)"
 
+echo " - Found ${#python_files[@]} python file(s)"
 if [ ${#python_files[@]} -eq 0 ]; then
-    echo "passed=true"
+    echo -e " - [\e[32mPASSED\e[0m]"
     exit 0
 fi
 
@@ -41,9 +44,9 @@ echo "${output}" | sed -n 's|^\(\S\+\):\([0-9]\+\):\([0-9]\+\): error: \(.*\)$|:
 if [[ -n "$result" ]]; then
     error="$(echo $result | awk '/^Found/{print $2}')"
     if [[ -z "$error" ]]; then
-        echo "passed=true"
+        echo -e " - [\e[32mPASSED\e[0m]"
         exit 0
     fi
 fi
-echo "passed=false"
+echo -e " - [\e[31mFAILED\e[0m]"
 exit 1

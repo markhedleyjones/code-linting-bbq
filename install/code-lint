@@ -10,11 +10,13 @@ linters=(
     # code-lint-typecheck
 )
 for check in ${linters[@]}; do
-    echo "Running ${check}"
     if ! ${check}; then
         exit_code=1
-        echo "failed ${check}"
     fi
 done
-
+if [ ${exit_code} -eq 0 ]; then
+    echo -e "All tests passed"
+else
+    echo -e "One or more test(s) failed"
+fi
 exit ${exit_code}
