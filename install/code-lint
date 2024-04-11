@@ -7,8 +7,14 @@ linters=(
     code-lint-clang
     code-lint-flake8
     code-lint-roslint
-    # code-lint-typecheck
+    code-lint-typecheck
 )
+
+if [ -z ${INPUT_MOUNTPOINT} ]; then
+    echo -e "No mountpoint was provided"
+    exit 1
+fi
+
 for check in ${linters[@]}; do
     if ! ${check}; then
         exit_code=1
