@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+echo "Running $(basename ${0}) ..."
+
+cd /mnt/input
+
+base_files_to_check=($(find . -type f -not -path '*/\.git/*' -not -path '*/__pycache__/*' -not -path '*/\.mypy_cache/*'))
+
+files_to_check=()
+echo " - Scanning for python files by mimetype..."
+for file in ${base_files_to_check[@]}; do
+    filetype=$(file -b --mime-type ${file})
+    if echo ${filetype} | grep -qE "text/x-python|text/x-script.python"; then
+        files_to_check+=(${file})
+    fi
+done
+
+if [ -z "${files_to_check}" ]; then
+    echo " - Found 0 source file(s)"
+    echo -e " - [\e[32mPASSED\e[0m]"
+    exit 0
+fi
+exit_code=0
+
+echo " - Found ${#files_to_check[@]} source file(s)"
+for file in ${files_to_check[@]}; do
+    flake8 --show-source --statistics ${file} |
+        sed 's|^\(\S\+\):\([0-9]\+\):\([0-9]\+\): \(.*\)$|::error file=\1,line=\2,col=\3::\4\n\0|'
+    exit_code=$(($exit_code | ${PIPESTATUS[0]}))
+done
+
+if [ ${exit_code} -eq 0 ]; then
+    echo -e " - [\e[32mPASSED\e[0m]"
+else
+    echo -e " - [\e[31mFAILED\e[0m]"
+fi
+
+exit ${exit_code}
