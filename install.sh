@@ -47,7 +47,7 @@ for script in ${linting_scripts[@]}; do
     echo "" >>${script_path}
     echo "echo \"Scanning: \${scan_directory}\"" >>${script_path}
     echo "" >>${script_path}
-    echo "run --image code-linting-bbq --workspace \${scan_directory} ${script}" >>${script_path}
+    echo "run --image code-linting-bbq --mount \${scan_directory} ${script}" >>${script_path}
     chmod +x ${script_path}
 done
 
