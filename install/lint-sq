@@ -4,10 +4,10 @@ set -eo pipefail
 
 exit_code=0
 linters=(
-    code-lint-clang
-    code-lint-flake8
-    code-lint-roslint
-    # code-lint-typecheck
+    lint-sq-clang
+    lint-sq-flake8
+    lint-sq-roslint
+    # lint-sq-typecheck
 )
 for check in ${linters[@]}; do
     if ! ${check}; then

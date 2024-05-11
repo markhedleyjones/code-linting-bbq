@@ -7,7 +7,7 @@ set -eo pipefail
 curl -LOJs https://raw.githubusercontent.com/seqsense/ros_style/master/.clang-format
 trap 'rm -f .clang-format' EXIT
 
-paths_to_ignore=$(find . -type f -not -path '*/build/*' -name ".lint-ignore" | xargs dirname)
+paths_to_ignore=$(find . -type f -not -path '*/build/*' -name ".lint-ignore" | xargs -r dirname)
 
 find_command="find . -type f -not -path '*/build/*'"
 for path in ${paths_to_ignore}; do
