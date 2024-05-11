@@ -1,5 +1,5 @@
 APT_MIRROR      := ""
-BASE_IMAGE      := ubuntu:latest
+BASE_IMAGE      := ubuntu:jammy
 WORKSPACE_NAME  := workspace
 
 # These settings only apply to the production image
