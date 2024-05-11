@@ -4,6 +4,8 @@ echo "Running $(basename ${0}) ..."
 
 set -eo pipefail
 
+cd /mnt/input
+
 curl -LOJs https://raw.githubusercontent.com/seqsense/ros_style/master/.clang-format
 trap 'rm -f .clang-format' EXIT
 
