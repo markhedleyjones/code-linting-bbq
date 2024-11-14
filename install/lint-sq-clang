@@ -15,6 +15,7 @@ done
 find_command="${find_command} -name '*.cpp' -o -name '*.h' -o -name '*.hpp'"
 
 files_to_check=($(eval "${find_command}"))
+files_that_differ=()
 
 if [ -z "${files_to_check}" ]; then
     echo " - Found 0 source file(s)"
@@ -25,15 +26,23 @@ fi
     echo " - Found ${#files_to_check[@]} source file(s)"
     passed=true
     for file in "${files_to_check[@]}"; do
-    if ! diff -q "$file" <(clang-format-11 --style=file --Werror "$file") 2>&1 >/dev/null; then
-        echo -e "\e[31mDIFFERENCES FOUND\e[0m in ${file}"
-        diff "$file" <(clang-format-11 --style=file --Werror "$file")
-        echo ""
-        echo "----"
-        echo ""
-        passed=false
-    fi
+        path_output=/mnt/output/sq-clang/${file}
+        dir_output=$(dirname ${path_output})
+        mkdir -p ${dir_output}
+        clang-format-11 --style=file --Werror "$file" > ${path_output}
+        if ! diff -q "${file}" ${path_output}; then
+            echo -e "\e[31mDIFFERENCES FOUND\e[0m in ${file}"
+            diff "$file" "${path_output}"
+            echo ""
+            echo "----"
+            echo ""
+            passed=false
+        fi
     done
+    if [ $passed = false ]; then
+        echo "Tip: run the following command to inspect/apply formatting:"
+        echo "meld . /tmp/code-linting-bbq/sq-clang"
+    fi
     $passed
 ) && echo -e " - [\e[32mPASSED\e[0m]" ||
     (
