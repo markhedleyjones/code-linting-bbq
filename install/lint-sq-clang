@@ -28,7 +28,7 @@ fi
     echo " - Found ${#files_to_check[@]} source file(s)"
     clang-format-11 \
         --style=file --Werror \
-        ${files_to_check} \
+        "${files_to_check[@]}" \
         2>&1 >/dev/null |
         sed ':l; N; /\n\S\+:[0-9]\+:[0-9]\+: error: /b l; N; s/\n/%0A/g' |
         sed 's/^\([^:]\+\):\([0-9]\+\):\([0-9]\+\): error: \+\(.*\)/::error file=\1,line=\2,col=\3::\4/'
