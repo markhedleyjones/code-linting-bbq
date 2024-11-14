@@ -12,7 +12,7 @@ find_command="find . -type f -not -path '*/build/*'"
 for path in ${paths_to_ignore}; do
     find_command="${find_command} -not -path '${path}/*'"
 done
-find_command="${find_command} -name '*.cpp' -o -name '*.h' -o -name '*.hpp'"
+find_command="${find_command} \( -name '*.cpp' -o -name '*.h' -o -name '*.hpp' \)"
 
 files_to_check=($(eval "${find_command}"))
 
