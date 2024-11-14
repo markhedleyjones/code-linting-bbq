@@ -24,6 +24,12 @@ RUN if [ ! -z $(ls /build/pip) ] ; then for path in /build/pip/pip*-req*.txt ; \
 
 COPY install/* /usr/local/bin/
 
+# Download these at build time so they can be placed in /mnt with root permissions
+RUN cd /mnt \
+&& curl -LOJ https://raw.githubusercontent.com/seqsense/ros_style/master/.flake8 \
+&& curl -LOJ https://raw.githubusercontent.com/seqsense/ros_style/master/pyproject.toml \
+&& curl -LOJs https://raw.githubusercontent.com/seqsense/ros_style/master/.clang-format
+
 # Create user account (if necessary)
 ARG USER_GID
 ARG USER_UID

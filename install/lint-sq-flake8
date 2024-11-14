@@ -4,10 +4,6 @@ echo "Running $(basename ${0}) ..."
 
 cd /mnt/input
 
-curl -LOJs https://raw.githubusercontent.com/seqsense/ros_style/master/.flake8
-curl -LOJs https://raw.githubusercontent.com/seqsense/ros_style/master/pyproject.toml
-trap 'rm -f .flake8 pyproject.toml' EXIT
-
 base_files_to_check=($(find . -type f -not -path '*/\.git/*' -not -path '*/__pycache__/*' -not -path '*/\.mypy_cache/*'))
 
 files_to_check=()
