@@ -39,13 +39,11 @@ fi
             passed=false
         fi
     done
-    if [ $passed = false ]; then
-        echo "Tip: run the following command to inspect/apply formatting:"
-        echo "meld . /tmp/code-linting-bbq/sq-clang"
-    fi
-    $passed
+    return $passed
 ) && echo -e " - [\e[32mPASSED\e[0m]" ||
     (
         echo -e " - [\e[31mFAILED\e[0m] Some file(s) require formatting"
+        echo -e " - [\e[34m TIP! \e[0m] View the diff using meld by running: meld . /tmp/code-linting-bbq/sq-clang"
+        echo ""
         exit 1
     )
