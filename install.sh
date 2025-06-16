@@ -38,21 +38,27 @@ mkdir -p ${HOME}/.local/bin
 for script in ${linting_scripts[@]}; do
     echo "Linking ${script}"
     script_path=${HOME}/.local/bin/${script}
-    echo "#!/usr/bin/env bash" >${script_path}
-    echo "" >>${script_path}
-    echo "scan_directory=\$(pwd)" >>${script_path}
-    echo "if [ -n \"\$1\" ]; then" >>${script_path}
-    echo "    scan_directory=\$(realpath \$1)" >>${script_path}
-    echo "fi" >>${script_path}
-    echo "" >>${script_path}
-    echo "echo \"Scanning: \${scan_directory}\"" >>${script_path}
-    echo "" >>${script_path}
-    echo "path_output=/tmp/code-linting-bbq" >>${script_path}
-    echo "if [ -d \${path_output} ]; then" >>${script_path}
-    echo "    rm -rf \${path_output}" >>${script_path}
-    echo "fi" >>${script_path}
-    echo "mkdir -p /tmp/code-linting-bbq" >>${script_path}
-    echo "run --image code-linting-bbq --mount \${scan_directory} --mount-output \${path_output} ${script}" >>${script_path}
+    cat > ${script_path} << 'EOF'
+#!/usr/bin/env bash
+
+scan_directory=$(pwd)
+if [ -n "$1" ]; then
+    if [ ! -d "$1" ]; then
+        echo "Error: The provided path '$1' is not a directory."
+        exit 1
+    fi
+    scan_directory=$(realpath $1)
+fi
+
+echo "Scanning: ${scan_directory}"
+
+path_output=/tmp/code-linting-bbq
+if [ -d ${path_output} ]; then
+    rm -rf ${path_output}
+fi
+mkdir -p /tmp/code-linting-bbq
+run --image code-linting-bbq --mount ${scan_directory} --mount-output ${path_output} lint-sq
+EOF
     chmod +x ${script_path}
 done
 
