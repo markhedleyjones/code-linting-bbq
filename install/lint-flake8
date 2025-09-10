@@ -4,16 +4,59 @@ echo "Running $(basename ${0}) ..."
 
 cd /mnt/input
 
-base_files_to_check=($(find . -type f -not -path '*/\.git/*' -not -path '*/__pycache__/*' -not -path '*/\.mypy_cache/*'))
+# Function to check if file is Python
+is_python_file() {
+  local file="$1"
+  if [ ! -f "$file" ]; then
+    return 1
+  fi
+  local filetype=$(file -b --mime-type "$file" 2>/dev/null)
+  if echo "$filetype" | grep -qE "text/x-python|text/x-script.python"; then
+    return 0
+  fi
+  # Also check by extension as fallback
+  if [[ "$file" =~ \.py$ ]] || [[ "$file" =~ \.pyi$ ]]; then
+    return 0
+  fi
+  return 1
+}
+
+# Function to find Python files in directory
+find_python_files_in_dir() {
+  local dir="$1"
+  find "$dir" -type f -not -path '*/\.git/*' -not -path '*/__pycache__/*' -not -path '*/\.mypy_cache/*' 2>/dev/null | while read -r file; do
+    if is_python_file "$file"; then
+      echo "$file"
+    fi
+  done
+}
 
 files_to_check=()
 echo " - Scanning for python files by mimetype..."
-for file in ${base_files_to_check[@]}; do
-    filetype=$(file -b --mime-type ${file})
-    if echo ${filetype} | grep -qE "text/x-python|text/x-script.python"; then
-        files_to_check+=(${file})
+
+if [ $# -eq 0 ]; then
+  # No arguments, scan current directory
+  while IFS= read -r file; do
+    files_to_check+=("$file")
+  done < <(find_python_files_in_dir ".")
+else
+  # Process each argument
+  for arg in "$@"; do
+    if [ -f "$arg" ]; then
+      # It's a file - check if it's Python
+      if is_python_file "$arg"; then
+        files_to_check+=("$arg")
+      fi
+    elif [ -d "$arg" ]; then
+      # It's a directory - recursively find Python files
+      while IFS= read -r file; do
+        files_to_check+=("$file")
+      done < <(find_python_files_in_dir "$arg")
+    else
+      echo "Warning: '$arg' is neither a file nor a directory, skipping"
     fi
-done
+  done
+fi
 
 if [ -z "${files_to_check}" ]; then
     echo " - Found 0 source file(s)"

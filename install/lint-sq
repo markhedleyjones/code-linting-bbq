@@ -10,7 +10,7 @@ linters=(
     # lint-sq-typecheck
 )
 for check in ${linters[@]}; do
-    if ! ${check}; then
+    if ! ${check} "$@"; then
         exit_code=1
     fi
 done

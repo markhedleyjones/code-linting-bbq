@@ -6,15 +6,43 @@ set -eo pipefail
 
 cd /mnt/input
 
-paths_to_ignore=$(find . -type f -not -path '*/build/*' -name ".lint-ignore" | xargs -r dirname)
+# Function to recursively find files in a directory
+find_files_in_dir() {
+  local dir="$1"
+  local paths_to_ignore=$(find "$dir" -type f -not -path '*/build/*' -name ".lint-ignore" 2>/dev/null | xargs -r dirname)
 
-find_command="find . -type f -not -path '*/build/*'"
-for path in ${paths_to_ignore}; do
+  local find_command="find '$dir' -type f -not -path '*/build/*'"
+  for path in ${paths_to_ignore}; do
     find_command="${find_command} -not -path '${path}/*'"
-done
-find_command="${find_command} \( -name '*.cpp' -o -name '*.h' -o -name '*.hpp' \)"
+  done
+  find_command="${find_command} \( -name '*.cpp' -o -name '*.h' -o -name '*.hpp' \)"
 
-files_to_check=($(eval "${find_command}"))
+  eval "${find_command}" 2>/dev/null
+}
+
+# Process arguments or use current directory if none provided
+files_to_check=()
+if [ $# -eq 0 ]; then
+  # No arguments, scan current directory
+  files_to_check=($(find_files_in_dir "."))
+else
+  # Process each argument
+  for arg in "$@"; do
+    if [ -f "$arg" ]; then
+      # It's a file - check if it's a C++ source file
+      if [[ "$arg" =~ \.(cpp|h|hpp)$ ]]; then
+        files_to_check+=("$arg")
+      fi
+    elif [ -d "$arg" ]; then
+      # It's a directory - recursively find files
+      while IFS= read -r file; do
+        files_to_check+=("$file")
+      done < <(find_files_in_dir "$arg")
+    else
+      echo "Warning: '$arg' is neither a file nor a directory, skipping"
+    fi
+  done
+fi
 
 if [ -z "${files_to_check}" ]; then
     echo " - Found 0 source file(s)"
